@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './size_helper.dart';
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 
 class Timerr extends StatefulWidget {
   final int breakTime;
@@ -30,16 +31,24 @@ class Timerr extends StatefulWidget {
 }
 
 class _TimerrState extends State<Timerr> {
-  late int _breakEx = widget.breakExerciceSeconds + (widget.breakExercice * 60);
-  late int _breakSe = widget.breakTimeSeconds + (widget.breakTime * 60);
+  late int _breakEx =
+      (widget.breakExerciceSeconds + (widget.breakExercice * 60)) == 0
+          ? 60
+          : widget.breakExerciceSeconds + (widget.breakExercice * 60);
+  late int _breakSe = (widget.breakTimeSeconds + (widget.breakTime * 60)) == 0
+      ? 60
+      : (widget.breakTimeSeconds + (widget.breakTime * 60));
   static const minSeconds = 0;
   int seconds = minSeconds;
   late List<int> repCompare = widget.rep;
   int index = 0;
   Timer? timer;
-  late bool series = false;
   late bool exercice = true;
-  late bool firstTime = true;
+  late bool end = false;
+  late bool pauseForSerie = false;
+  bool alarm = false;
+  static AudioCache _player = AudioCache();
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +59,68 @@ class _TimerrState extends State<Timerr> {
         decoration: BoxDecoration(color: Colors.blueAccent.withOpacity(0.9)),
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Container(
+                color: Colors.blueAccent.withOpacity(0.2),
+                height: (displayHeight(context) -
+                        kToolbarHeight -
+                        MediaQuery.of(context).padding.top) *
+                    0.17,
+                width: displayWidth(context),
+                child: (ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          // _addImage(widget.exercices[index]),
+
+                          Container(
+                            height: (displayHeight(context) -
+                                    kToolbarHeight -
+                                    MediaQuery.of(context).padding.top) *
+                                0.1,
+                            width: displayWidth(context) / 4.5,
+                            decoration: const BoxDecoration(),
+                            child: IconButton(
+                              icon: Image.asset(
+                                choseImage(widget.exercices[index]),
+                                height: (displayHeight(context) -
+                                        kToolbarHeight -
+                                        MediaQuery.of(context).padding.top) *
+                                    0.1,
+                                width: displayWidth(context) / 4.5,
+                                fit: BoxFit.scaleDown,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                          Text(
+                            widget.exercices[index],
+                            style: const TextStyle(
+                                fontSize: 9, color: Colors.white),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                repCompare[index].toString(),
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                              Text(
+                                repCompare[index] > 1 ? " series" : " serie",
+                                style: const TextStyle(color: Colors.white),
+                              )
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                    itemCount: widget.exercices.length)),
+              ),
+            ),
             go(widget.timeForEx, widget.numberOfSeries, _breakEx, _breakSe,
                 widget.rep, widget.exercices),
           ],
@@ -68,60 +139,11 @@ class _TimerrState extends State<Timerr> {
   ) {
     return Column(
       children: [
-        debugMyValues(
-            timeForEx, _breakEx, _breakSe, numberOfSeries, rep, exercices),
+        // debugMyValues(
+        // timeForEx, _breakEx, _breakSe, numberOfSeries, rep, exercices),
         timerWidget(
             timeForEx, _breakEx, _breakSe, numberOfSeries, rep, exercices),
       ],
-    );
-  }
-
-  Widget debugMyValues(
-    int timeForEx,
-    int _breakEx,
-    int _breakSe,
-    int numberOfSeries,
-    List<int> rep,
-    List<String> exercices,
-  ) {
-    return Container(
-      width: displayWidth(context),
-      height: displayHeight(context) * 0.24,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 24,
-          ),
-          Text(
-            "time pour realiser l'exo: $timeForEx",
-            style: const TextStyle(fontSize: 20),
-          ),
-          Text(
-            "time entre chaque exo: $_breakEx",
-            style: const TextStyle(fontSize: 20),
-          ),
-          Text(
-            "time entre chaque serie: $_breakSe",
-            style: const TextStyle(fontSize: 20),
-          ),
-          Text(
-            "nb of reps: $rep",
-            style: const TextStyle(fontSize: 15),
-          ),
-          Text(
-            "nb of repsComp: $repCompare",
-            style: const TextStyle(fontSize: 15),
-          ),
-          Text(
-            "names of exercices: $exercices",
-            style: const TextStyle(fontSize: 15),
-          ),
-          const Divider(
-            height: 10,
-          ),
-        ],
-      ),
     );
   }
 
@@ -129,35 +151,34 @@ class _TimerrState extends State<Timerr> {
       List<int> rep, List<String> exercices) {
     return Container(
       width: displayWidth(context),
-      height: displayHeight(context) * 0.76,
-      color: Colors.yellow,
+      height: (displayHeight(context)) * 0.82,
+      color: Colors.blueAccent.withOpacity(0.2),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           buildTimer(),
-          exercice
-              ? Container(
-                  height: (displayHeight(context) -
-                          kToolbarHeight -
-                          MediaQuery.of(context).padding.top) *
-                      0.2,
-                  width: displayWidth(context) / 3,
-                  decoration: const BoxDecoration(),
-                  child: IconButton(
-                    icon: Image.asset(
-                      choseImage(widget.exercices[index]),
-                      height: (displayHeight(context) -
-                              kToolbarHeight -
-                              MediaQuery.of(context).padding.top) *
-                          0.2,
-                      width: displayWidth(context) / 3,
-                      fit: BoxFit.scaleDown,
-                    ),
-                    onPressed: () {},
-                  ),
-                )
-              : Text("ZZZZzzzzzzzzzz"),
+          Container(
+            color: Colors.blueAccent.withOpacity(0.2),
+            height: displayHeight(context) * 0.3,
+            width: displayWidth(context),
+            child: IconButton(
+              icon: Image.asset(
+                end
+                    ? "./assets/images/success.png"
+                    : exercice
+                        ? choseImage(widget.exercices[index])
+                        : "./assets/images/drink.png",
+                height: (displayHeight(context) -
+                        kToolbarHeight -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                width: displayWidth(context),
+                fit: BoxFit.scaleDown,
+              ),
+              onPressed: () {},
+            ),
+          ),
+          detailsExo(),
           buildButtons(),
         ],
       ),
@@ -166,84 +187,141 @@ class _TimerrState extends State<Timerr> {
 
   Widget buildButtons() {
     bool isRunning = timer == null ? false : timer!.isActive;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        isRunning
-            ? ButtonWidget(
-                text: 'Pause Timer!',
-                onClicked: () {
-                  pauseTimer();
-                },
-              )
-            : ButtonWidget(
-                text: 'Start Timer!',
-                onClicked: () {
-                  startTimer();
-                },
-              ),
-      ],
+    return Container(
+      width: displayWidth(context),
+      height: displayHeight(context) * 0.23,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          isRunning
+              ? ButtonWidget(
+                  text: 'Pause Timer!',
+                  onClicked: () {
+                    pauseTimer();
+                  },
+                )
+              : end
+                  ? Container()
+                  : ButtonWidget(
+                      text: 'Start Timer!',
+                      onClicked: () {
+                        startTimer();
+                      },
+                    ),
+        ],
+      ),
     );
   }
 
   Widget buildTimer() {
-    // int _reverseSecond = _breakEx - seconds;
+    int _reverseSecond = _breakEx - seconds;
+    if (!end) {
+      if (pauseForSerie) {
+        _reverseSecond = _breakSe - seconds;
+      } else if (exercice) {
+        _reverseSecond = widget.timeForEx - seconds;
+      } else {
+        _reverseSecond = _breakEx - seconds;
+      }
+      if (alarm && _reverseSecond == 5) {
+        myAlarm();
+      }
+    }
 
-    return Text(
-      "$seconds",
-      style: TextStyle(
-          color: exercice ? Colors.red : Colors.white,
-          fontSize: 100,
-          fontWeight: FontWeight.w700),
+    return Container(
+      width: displayWidth(context),
+      height: displayHeight(context) * 0.23,
+      color: Colors.blueAccent.withOpacity(0.2),
+      child: Column(
+        children: [
+          end
+              ? Text(
+                  "well done!",
+                  style: TextStyle(
+                    fontSize: 60,
+                  ),
+                )
+              : Text(
+                  "$_reverseSecond",
+                  style: TextStyle(
+                      color: exercice ? Colors.red : Colors.white,
+                      fontSize: 120,
+                      fontWeight: FontWeight.w700),
+                ),
+        ],
+      ),
     );
   }
 
   void startTimer() {
     const oneSec = Duration(seconds: 1);
-    timer = Timer.periodic(oneSec, (value) {
+    timer = Timer.periodic(oneSec, (_) {
       setState(() {
-        if (!checkIfAllDone() && index != -1) {
-          seconds = seconds + 2;
-          if (exercice || series) {
-            breakMethodEx();
-          } else {
-            updateRepCompare(); //remets l'index au bon endroit et update repCompare si ya besoino
-            if (checkOurPosition()) {
-              if (seconds % _breakEx == 0) {
-                if (firstTime) {
-                  repCompare[0] = repCompare[0] - 1;
-                  index++;
-                  firstTime = false;
-                }
-                seconds = 0;
-                //pause pr l'exo
-                exercice = true;
-              }
-            } else {
-              if (seconds % _breakSe == 0) {
-                if (firstTime) {
-                  repCompare[0] = repCompare[0] - 1;
-                  index++;
-                  firstTime = false;
-                }
-                seconds = 0;
-                // breakMethodSe();
-                //pause pour l'exo
-                series = true;
-              }
+        seconds++;
+        if (exercice) {
+          if (seconds == widget.timeForEx) {
+            exercice = false;
+            alarm = true;
+            repCompare[index] = repCompare[index] - 1;
+            updateIndex();
+            seconds = 0;
+          }
+        } else {
+          if (pauseForSerie) {
+            if (seconds == _breakSe) {
+              alarm = false;
+              exercice = true;
+              seconds = 0;
+              pauseForSerie = false;
             }
-          } // here we update the routine;
-        } else if (checkIfAllDone()) {
-          ///////////ici faut metttre alarme
-          alarmTimer();
+          } else if (seconds == _breakEx) {
+            alarm = false;
+            exercice = true;
+            seconds = 0;
+          }
         }
       });
     });
   }
 
+  void pauseTimer() {
+    setState(() {
+      timer?.cancel();
+    });
+  }
+
+  void endTimer() {
+    timer?.cancel();
+    setState(() {
+      end = true;
+    });
+  }
+
+  void updateIndex() {
+    setState(() {
+      if (checkIfAllDone()) {
+        endTimer();
+      } else if (index < repCompare.length) {
+        if (index != repCompare.length - 1) {
+          index++;
+          if (repCompare[index] == 0) {
+            updateIndex();
+          }
+        } else {
+          pauseForSerie = true;
+
+          index = 0;
+          if (repCompare[index] == 0) {
+            updateIndex();
+          }
+        }
+      }
+    });
+  }
+
   bool checkIfAllDone() {
     int i = 0;
-    while (i < widget.rep.length) {
+    while (i < repCompare.length) {
       if (repCompare[i] != 0) {
         return false;
       } else {
@@ -253,89 +331,25 @@ class _TimerrState extends State<Timerr> {
     return true;
   }
 
-  void pauseTimer() {
-    setState(() {
-      timer?.cancel();
-    });
+  Future<AudioPlayer> myAlarm() async {
+    return AudioCache().play("./audio/letsgo.mp3");
   }
 
-  void updateRepCompare() {
-    bool betweenEx =
-        checkOurPosition(); // si on est sur un ex ou une fin de serie
-    if (betweenEx && seconds % _breakEx == 0) {
-      setState(() {
-        repCompare[index] = repCompare[index] - 1;
-
-        updateIndex();
-      });
-    } else if (!betweenEx &&
-        seconds % _breakSe ==
-            0) // un boolean qui nous dit si on est entre ex ou serie
-    {
-      setState(() {
-        repCompare[index] = repCompare[index] - 1;
-        updateIndex();
-      });
-      // une variable qui se rappelle on est où dans notre table, circuit
-    } else {
-      return;
-    }
-  }
-
-  bool checkOurPosition() {
-    int tmp = index + 1;
-    while (tmp < repCompare.length) {
-      if (repCompare[tmp] != 0) return true;
-      tmp++;
-    }
-    return false; //si on est entre ex ou se
-  }
-
-  void updateIndex() {
-    setState(() {
-      if (index < repCompare.length - 1) {
-        index++;
-        if (repCompare[index] == 0) {
-          if (checkIfAllDone()) {
-            index == -1;
-            return;
-          }
-          updateIndex();
-        }
+  Widget detailsExo() {
+    if (!end) {
+      if (exercice) {
+        return Text(
+          widget.exercices[index],
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        );
       } else {
-        index = 0;
-        if (repCompare[index] == 0) {
-          if (checkIfAllDone()) {
-            index == -1;
-            return;
-          }
-          updateIndex();
-        }
-      }
-    });
-  }
-
-  void alarmTimer() {
-    timer?.cancel();
-  }
-
-  void breakMethodEx() {
-    // ici on gerer le temps d' exo et la pause de la serie, on pourra peut etre rajouter methode alarme
-    if (exercice) {
-      if (seconds % widget.timeForEx == 0) {
-        setState(() {
-          seconds = 0;
-          exercice = false;
-        });
-      }
-    } else {
-      if (seconds % _breakSe == 0) {
-        setState(() {
-          seconds = 0;
-          series = false;
-        });
+        return Text(
+          "Pause",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        );
       }
     }
+    return Container();
   }
 }
 
@@ -360,69 +374,3 @@ class ButtonWidget extends StatelessWidget {
         ));
   }
 }
-
-
-/*  // Container(
-            //   height: (displayHeight(context) -
-            //           kToolbarHeight -
-            //           MediaQuery.of(context).padding.top) *
-            //       0.13,
-            //   width: displayWidth(context),
-            //   child: (ListView.builder(
-            //       scrollDirection: Axis.horizontal,
-            //       itemBuilder: (context, index) {
-            //         return Column(
-            //           children: [
-            //             // _addImage(widget.exercices[index]),
-            //             Row(
-            //               children: [
-            //                 Text(
-            //                   widget.rep[index].toString(),
-            //                   style: const TextStyle(
-            //                       fontSize: 20,
-            //                       fontWeight: FontWeight.w600,
-            //                       color: Colors.white),
-            //                 ),
-            //                 const Text(
-            //                   " series",
-            //                   style: TextStyle(color: Colors.white),
-            //                 )
-            //               ],
-            //             ),
-            //             Text(
-            //               widget.exercices[index],
-            //               style:
-            //                   const TextStyle(fontSize: 9, color: Colors.white),
-            //             ),
-            //             Container(
-            //               height: (displayHeight(context) -
-            //                       kToolbarHeight -
-            //                       MediaQuery.of(context).padding.top) *
-            //                   0.075,
-            //               width: displayWidth(context) / 4.5,
-            //               decoration: const BoxDecoration(),
-            //               child: IconButton(
-            //                 icon: Image.asset(
-            //                   choseImage(widget.exercices[index]),
-            //                   height: (displayHeight(context) -
-            //                           kToolbarHeight -
-            //                           MediaQuery.of(context).padding.top) *
-            //                       0.1,
-            //                   width: displayWidth(context) / 3,
-            //                   fit: BoxFit.scaleDown,
-            //                 ),
-            //                 onPressed: () {
-            //                   setState(() {
-            //                     if (widget.rep[index] > 0) {
-            //                       widget.rep[index]--;
-            //                       // widget.notifyParent(index);
-            //                     }
-            //                   });
-            //                 },
-            //               ),
-            //             ),
-            //           ],
-            //         );
-            //       },
-            //       itemCount: widget.exercices.length)),
-            // ),*/

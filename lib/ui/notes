@@ -1,0 +1,215 @@
+/*     exercice
+              ? Container(
+                  height: (displayHeight(context) -
+                          kToolbarHeight -
+                          MediaQuery.of(context).padding.top) *
+                      0.2,
+                  width: displayWidth(context) / 3,
+                  decoration: const BoxDecoration(),
+                  child: IconButton(
+                    icon: Image.asset(
+                      choseImage(widget.exercices[index]),
+                      height: (displayHeight(context) -
+                              kToolbarHeight -
+                              MediaQuery.of(context).padding.top) *
+                          0.2,
+                      width: displayWidth(context) / 3,
+                      fit: BoxFit.scaleDown,
+                    ),
+                    onPressed: () {},
+                  ),
+                )
+              : Text("ZZZZzzzzzzzzzz"),*/
+
+
+              /*void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(oneSec, (value) {
+      setState(() {
+        if (!checkIfAllDone() && index != -1) {
+          seconds = seconds + 2;
+          if (exercice || series) {
+            breakMethodEx();
+          } else {
+            updateRepCompare(); //remets l'index au bon endroit et update repCompare si ya besoino
+            if (checkOurPosition()) {
+              if (seconds % _breakEx == 0) {
+                if (firstTime) {
+                  repCompare[0] = repCompare[0] - 1;
+                  index++;
+                  firstTime = false;
+                }
+                seconds = 0;
+                //pause pr l'exo
+                exercice = true;
+              }
+            } else {
+              if (seconds % _breakSe == 0) {
+                if (firstTime) {
+                  repCompare[0] = repCompare[0] - 1;
+                  index++;
+                  firstTime = false;
+                }
+                seconds = 0;
+                // breakMethodSe();
+                //pause pour l'exo
+                series = true;
+              }
+            }
+          } // here we update the routine;
+        } else if (checkIfAllDone()) {
+          ///////////ici faut metttre alarme
+          alarmTimer();
+        }
+      });
+    });
+  } */
+
+
+  /* bool checkIfAllDone() {
+    int i = 0;
+    while (i < widget.rep.length) {
+      if (repCompare[i] != 0) {
+        return false;
+      } else {
+        i++;
+      }
+    }
+    return true;
+  }
+
+  void pauseTimer() {
+    setState(() {
+      timer?.cancel();
+    });
+  } */
+
+  /*void updateRepCompare() {
+    bool betweenEx =
+        checkOurPosition(); // si on est sur un ex ou une fin de serie
+    if (betweenEx && seconds % _breakEx == 0) {
+      setState(() {
+        repCompare[index] = repCompare[index] - 1;
+
+        updateIndex();
+      });
+    } else if (!betweenEx &&
+        seconds % _breakSe ==
+            0) // un boolean qui nous dit si on est entre ex ou serie
+    {
+      setState(() {
+        repCompare[index] = repCompare[index] - 1;
+        updateIndex();
+      });
+      // une variable qui se rappelle on est où dans notre table, circuit
+    } else {
+      return;
+    }
+  }
+
+  bool checkOurPosition() {
+    int tmp = index + 1;
+    while (tmp < repCompare.length) {
+      if (repCompare[tmp] != 0) return true;
+      tmp++;
+    }
+    return false; //si on est entre ex ou se
+  }
+
+  void updateIndex() {
+    setState(() {
+      if (index < repCompare.length - 1) {
+        index++;
+        if (repCompare[index] == 0) {
+          if (checkIfAllDone()) {
+            index == -1;
+            return;
+          }
+          updateIndex();
+        }
+      } else {
+        index = 0;
+        if (repCompare[index] == 0) {
+          if (checkIfAllDone()) {
+            index == -1;
+            return;
+          }
+          updateIndex();
+        }
+      }
+    });
+  }
+ */
+
+
+  /*  void breakMethodEx() {
+    // ici on gerer le temps d' exo et la pause de la serie, on pourra peut etre rajouter methode alarme
+    if (exercice) {
+      if (seconds % widget.timeForEx == 0) {
+        setState(() {
+          seconds = 0;
+          exercice = false;
+        });
+      }
+    } else {
+      if (seconds % _breakSe == 0) {
+        setState(() {
+          seconds = 0;
+          series = false;
+        });
+      }
+    }
+  }
+}
+ */
+
+/*
+  Widget debugMyValues(
+    int timeForEx,
+    int _breakEx,
+    int _breakSe,
+    int numberOfSeries,
+    List<int> rep,
+    List<String> exercices,
+  ) {
+    return Container(
+      width: displayWidth(context),
+      height: displayHeight(context) * 0.24,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 24,
+          ),
+          Text(
+            "time pour realiser l'exo: $timeForEx",
+            style: const TextStyle(fontSize: 20),
+          ),
+          Text(
+            "time entre chaque exo: $_breakEx",
+            style: const TextStyle(fontSize: 20),
+          ),
+          Text(
+            "time entre chaque serie: $_breakSe",
+            style: const TextStyle(fontSize: 20),
+          ),
+          Text(
+            "nb of reps: $rep",
+            style: const TextStyle(fontSize: 15),
+          ),
+          Text(
+            "nb of repsComp: $repCompare",
+            style: const TextStyle(fontSize: 15),
+          ),
+          Text(
+            "Index: $index",
+            style: const TextStyle(fontSize: 15),
+          ),
+          const Divider(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+ */

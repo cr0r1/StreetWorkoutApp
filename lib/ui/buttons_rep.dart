@@ -20,9 +20,9 @@ class ButtonsRep extends StatefulWidget {
 
 class _ButtonsRepState extends State<ButtonsRep> {
   int _breakTime = 0;
-  int _breakTimeSeconds = 0;
+  int _breakTimeSeconds = 60;
   int _breakExercice = 0;
-  int _breakExerciceSeconds = 0;
+  int _breakExerciceSeconds = 60;
   int _numberOfSeries = 2;
   int _timeForEx = 30;
   bool bs = true;

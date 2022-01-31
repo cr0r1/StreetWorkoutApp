@@ -37,10 +37,13 @@ class _ChooseExercicesState extends State<ChooseExercices> {
                     ));
                   },
                   backgroundColor: Colors.blueAccent,
-                  label: const Text("Go"),
+                  label: const Text(
+                    "Go",
+                  ),
                   icon: const Icon(
                     Icons.forward,
                     size: 40,
+                    color: Colors.white,
                   ))
               : Container(),
           const SizedBox(
@@ -53,22 +56,19 @@ class _ChooseExercicesState extends State<ChooseExercices> {
               _writeExercice(context);
             },
             label: const Text("Add"),
-            icon: const Icon(
-              Icons.create,
-              size: 20,
-            ),
+            icon: const Icon(Icons.create, size: 20, color: Colors.white),
           )
         ],
       ),
-      appBar: AppBar(
-        title: Text(
-          "players: ${widget.players}",
-          style: settingStyle(),
-        ),
-        backgroundColor: Colors.blueAccent,
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     "players: ${widget.players}",
+      //     style: settingStyle(),
+      //   ),
+      //   backgroundColor: Colors.blueAccent,
+      // ),
       body: Container(
-        color: Colors.blueGrey,
+        color: Colors.blueAccent,
         child: ListView.builder(
           itemBuilder: (context, index) {
             return Column(
@@ -108,7 +108,7 @@ class _ChooseExercicesState extends State<ChooseExercices> {
   Widget _selectionExercices(bool selected) {
     return Icon(
       selected == true ? Icons.check_box : Icons.check_box_outline_blank,
-      color: Colors.blueAccent,
+      color: Colors.white,
       size: 35,
     );
   }

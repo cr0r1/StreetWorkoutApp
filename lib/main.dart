@@ -25,8 +25,8 @@ class _NumberOfPlayerState extends State<NumberOfPlayer> {
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2,
-              decoration: const BoxDecoration(color: Colors.blueGrey),
+              height: MediaQuery.of(context).size.height * 0.80,
+              decoration: const BoxDecoration(color: Colors.blueAccent),
               child: TextButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
@@ -37,27 +37,21 @@ class _NumberOfPlayerState extends State<NumberOfPlayer> {
                       },
                     ));
                   },
-                  child: Text(
-                    "solo",
-                    style: settingStyle(),
+                  child: Stack(
+                    children: [
+                      Text("GO", style: settingStyle()),
+                    ],
                   )),
             ),
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2,
-              decoration: const BoxDecoration(color: Colors.blueAccent),
+              height: MediaQuery.of(context).size.height * 0.20,
+              decoration:
+                  BoxDecoration(color: Colors.blueAccent.withOpacity(0.8)),
               child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) {
-                        return const ChooseExercices(
-                          players: 2,
-                        );
-                      },
-                    ));
-                  },
+                  onPressed: () {},
                   child: Text(
-                    "Multi player",
+                    "Settings",
                     style: settingStyle(),
                   )),
             )
